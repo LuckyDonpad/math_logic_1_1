@@ -1,17 +1,22 @@
+# Принимает символ
 # Возвращает значение Истина, если токен - операция, иначе Ложь
 def is_operation(token):
+    assert len(token) == 1
     return token in "~>|?-"
 
 
+# Принимает символ обозначающий операцию
 # Возвращает приоритет операции
-# приоритет - число от одного до пяти: чем больше число, тем выше приоритет
+# приоритет - число от одного до пяти включительно: чем больше число, тем выше приоритет
 def get_priority(token):
+    assert len(token) == 1
     if not is_operation(token):
         raise SyntaxError("Undefined operation")
     return "~>|?-".find(token) + 1
 
 
-def get_postfix(infix) -> list:
+# принимает выражение в инфиксной записи и возвращает это выражение в ОПЗ
+def get_postfix(infix):
     infix = list(infix)
     output = []
     stack = []
@@ -57,4 +62,33 @@ def get_postfix(infix) -> list:
     return output
 
 
-print(get_postfix('A|B|C'))
+# возвращает логическое выражение введенное с клавиатуры в верхнем регистре без пробелов
+def input_expression():
+    print("Please input logical expression\n",
+          "'~' - equal\n",
+          "'>' - implication\n",
+          "'|' - or\n",
+          "'&' - and\n",
+          "'-' - not\n")
+    expression = str(input()).upper().replace(' ', '')
+    return expression
+
+
+# принимает строку-выражение, возвращает словарь где переменные - ключи, значение - 0
+def get_variables(expression):
+    expression = sorted(expression)
+    variables = {}
+    for symbol in expression:
+        if symbol.isalpha():
+            variables[symbol] = 0
+    return variables
+
+
+# принимает словарь с переменными и заполняет его значениями введенными с клавиатуры
+def input_values(variables) -> dict:
+    for key in variables.keys():
+        print("Введите значение переменной", key)
+        variables[key] = int(input())
+    return variables
+
+
