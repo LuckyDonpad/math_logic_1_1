@@ -1,8 +1,8 @@
 class Expression(object):
     def __init__(self, infix=''):
-        self.infix = infix
-        self.postfix = self.get_postfix(infix)
-        self.variables_dict = self.get_variables_dict()
+        self.infix = infix  # выражение в инфиксной записи
+        self.postfix = self.get_postfix(infix)  # выражение в ОПЗ
+        self.variables_dict = self.get_variables_dict()  # словарь переменных
 
     # принимает выражение в инфиксной записи и возвращает это выражение в ОПЗ
     def get_postfix(self, infix):
@@ -62,11 +62,13 @@ class Expression(object):
                 variables[symbol] = 0
         return variables
 
+    # ввод значений переменных с клавиатуры
     def input_values(self):
         for key in self.variables_dict.keys():
             print("Введите значение переменной", key)
             self.variables_dict[key] = int(input())
 
+    # возвращает результат вычисления бинарной операции
     def evaluate_binary(self, a, op, b):
         if op == "&":
             return a and b
@@ -79,12 +81,14 @@ class Expression(object):
         else:
             raise Exception
 
+    # возвращает результат вычисления унарной операции
     def evaluate_unary(self, a, op):
         if op == '-':
             return not a
         else:
             raise Exception
 
+    # возвращает результат вычисления выражения
     def evaluate(self):
         stack = []
         for token in self.postfix:
@@ -102,6 +106,20 @@ class Expression(object):
                 else:
                     raise Exception
         return stack[-1]
+
+    # возвращает таблицу истинности в виде двумерного массива
+    def evaluate_table(self):
+        table = []
+        for variant in range(len(self.variables_dict) ** 2):
+            variant = str(bin(variant))[2::]
+            variant = '0' * (len(self.variables_dict) - len(variant)) + variant
+            index = 0
+            for key in self.variables_dict.keys():
+                self.variables_dict[key] = int(variant[index])
+                index += 1
+            answer = self.evaluate()
+            table.append([variant, bool(answer)])
+        return table
 
 
 class Token(str):
@@ -152,9 +170,3 @@ def input_values(variables) -> dict:
         print("Введите значение переменной", key)
         variables[key] = int(input())
     return variables
-
-
-expression = input_expression()
-expression = Expression(expression)
-expression.input_values()
-print(expression.evaluate())
